@@ -1,0 +1,31 @@
+import { test, expect } from '@playwright/test';
+
+test('test', async ({ page }) => {
+  await page.goto('https://qa-cart.com/');
+  await page.getByRole('textbox', { name: 'Username or email address' }).click();
+  await page.getByRole('textbox', { name: 'Username or email address' }).fill('arjun.rajesh');
+  await page.getByRole('textbox', { name: 'Password  Required' }).click();
+  await page.getByRole('textbox', { name: 'Password  Required' }).fill('Arjun123$');
+  await page.getByRole('button', { name: 'Log in' }).click();
+  await expect(page.getByRole('navigation', { name: 'Account pages' }).getByRole('link', { name: 'Log out' })).toBeVisible();
+  await page.getByRole('link', { name: 'Address', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Billing address' })).toBeVisible();
+  await page.getByRole('link', { name: 'Edit Billing address' }).click();
+  await page.getByRole('textbox', { name: 'First name' }).click();
+  await page.getByRole('textbox', { name: 'First name' }).fill('Arjun1');
+  await page.getByRole('textbox', { name: 'Last name' }).click();
+  await page.getByRole('textbox', { name: 'Last name' }).fill('Rajesh1');
+  await page.getByRole('option', { name: 'India', exact: true }).click();
+  await page.getByRole('textbox', { name: 'Street address' }).click();
+  await page.getByRole('textbox', { name: 'Street address' }).fill('test address 11');
+  await page.getByRole('textbox', { name: 'Apartment, suite, unit, etc' }).click();
+  await page.getByRole('textbox', { name: 'Apartment, suite, unit, etc' }).fill('test address 22');
+  await page.getByRole('textbox', { name: 'Town / City' }).click();
+  await page.getByRole('textbox', { name: 'Town / City' }).fill('kolencherys');
+  await page.getByRole('option', { name: 'Daerah Istimewa Aceh' }).click();
+  await page.getByRole('textbox', { name: 'Postcode / ZIP' }).click();
+  await page.getByRole('textbox', { name: 'Postcode / ZIP' }).fill('6823112');
+  await expect(page.getByRole('textbox', { name: 'Email address' })).toBeVisible();
+  await page.getByRole('button', { name: 'Save address' }).click();
+  await expect(page.getByText('Address changed successfully.')).toBeVisible();
+});

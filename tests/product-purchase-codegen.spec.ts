@@ -1,0 +1,38 @@
+import { test, expect } from '@playwright/test';
+
+test('test', async ({ page }) => {
+  await page.goto('https://qa-cart.com/');
+  await page.getByRole('textbox', { name: 'Username or email address' }).click();
+  await page.getByRole('textbox', { name: 'Username or email address' }).fill('arjun.rajesh');
+  await page.getByRole('textbox', { name: 'Password  Required' }).click();
+  await page.getByRole('textbox', { name: 'Password  Required' }).fill('Arjun123$');
+  await page.getByRole('button', { name: 'Log in' }).click();
+  await page.getByRole('link', { name: 'DemoShop' }).click();
+  await expect(page.getByRole('heading', { name: 'DemoShop' })).toBeVisible();
+  await page.getByRole('searchbox', { name: 'Search' }).click();
+  await page.getByRole('searchbox', { name: 'Search' }).fill('organic');
+  await page.getByRole('button', { name: 'Search' }).click();
+  await expect(page.getByRole('heading', { name: 'Search results: “organic”' })).toBeVisible();
+  await expect(page.locator('a').filter({ hasText: 'Organic Face Scrub' })).toBeVisible();
+  await page.getByRole('textbox', { name: 'Filter products by maximum' }).click();
+  await page.getByRole('textbox', { name: 'Filter products by maximum' }).fill('$');
+  await page.locator('body').press('ArrowRight');
+  await page.getByRole('textbox', { name: 'Filter products by maximum' }).click();
+  await page.getByRole('textbox', { name: 'Filter products by maximum' }).click();
+  await page.getByRole('textbox', { name: 'Filter products by maximum' }).fill('$03');
+  await page.getByRole('textbox', { name: 'Filter products by maximum' }).press('ArrowRight');
+  await page.getByRole('textbox', { name: 'Filter products by maximum' }).fill('$0203');
+  await page.getByRole('link', { name: 'Pulses From Organic Farm' }).first().click();
+  await page.getByText('$15.00').click();
+  await page.getByRole('button', { name: 'Add to cart: “Pulses From' }).click();
+  await page.getByRole('link', { name: 'View Shopping Cart, 1 items' }).click();
+  await page.getByRole('link', { name: 'Proceed to checkout' }).click();
+  await page.getByRole('button', { name: 'Place order' }).click();
+  await expect(page.getByText('Thank you. Your order has')).toBeVisible();
+  await page.getByText('7769').click();
+  await page.getByRole('link', { name: 'My account' }).click();
+  await page.getByRole('link', { name: 'Orders', exact: true }).click();
+  await expect(page.getByRole('link', { name: 'View order number' })).toBeVisible();
+  await page.getByRole('link', { name: 'View order 7769' }).click();
+  await page.getByText('7769', { exact: true }).click();
+});
