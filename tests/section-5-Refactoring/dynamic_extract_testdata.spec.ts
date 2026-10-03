@@ -1,12 +1,15 @@
 import { test, expect } from '@playwright/test';
-const testData={
-  baseUrl:"https://qa-cart.com/",
-  user:
-  {
+let orderId:string | undefined
+const loginData=
+{
+    baseUrl:"https://qa-cart.com/",
     username:"arjun.rajesh",
     password:"Arjun123$"
-  },
-  search:{
+  
+}
+const testData={
+  
+   search:{
     keyword:        'organic',
     maxPrice:       '$25',
     expectedResult: 'Organic Face Scrub'
@@ -18,9 +21,9 @@ const testData={
   },
 }
 test.beforeEach(async ({ page }) => {
-  await page.goto(testData.baseUrl);
-  await page.getByRole('textbox', { name: 'Username or email address' }).fill(testData.user.username);
-  await page.getByRole('textbox', { name: 'Password  Required' }).fill(testData.user.password);
+  await page.goto(loginData.baseUrl);
+  await page.getByRole('textbox', { name: 'Username or email address' }).fill(loginData.username);
+  await page.getByRole('textbox', { name: 'Password  Required' }).fill(loginData.password);
   await page.getByRole('button', { name: 'Log in' }).click();
   await expect(page.getByLabel('Account pages').getByRole('link', { name: 'Log out' })).toBeVisible()
 })
@@ -70,14 +73,28 @@ test.describe("Demoshop purchase product @product_purchase", async () => {
       await page.getByRole('button', { name: 'Place order' }).click();
       await expect(page.getByText('Thank you. Your order has')).toBeVisible();
       //retrieve order id
+      orderId= await page.getByRole('listitem').filter({hasText:'Order number:'})
+      .locator('strong').textContent() || undefined
+      expect(orderId,'Order ID could not be read from the confirmation page')
+      console.log(orderId)
+      
     }
     )
+    //await page.pause()
+
     await test.step('Verify order is available in order history', async () => {
+      console.log(orderId)
       await page.getByRole('link', { name: 'My account' }).click();
       await page.getByRole('link', { name: 'Orders', exact: true }).click();
-      await expect(page.getByRole('link', { name: 'View order number 5717' })).toBeVisible();
-      await page.getByRole('link', { name: 'View order 5717' }).click();
-      await expect(page.getByRole('heading', { name: 'Order #' })).toBeVisible();
+      const ordersTable=page.getByRole('table')
+      const orderRow=ordersTable.getByRole('row').
+      filter({has:page.getByRole('link',{name:`View order number ${orderId}`})})
+      await orderRow.getByRole('link', { name: `View order ${orderId}` }).click()
+      await expect(page.getByRole('heading', { name: `Order #${orderId}` })).toBeVisible();
+      await page.pause()
+      // await expect(page.getByRole('link', { name: 'View order number 5717' })).toBeVisible();
+      // await page.getByRole('link', { name: 'View order 5717' }).click();
+      // await expect(page.getByRole('heading', { name: 'Order #' })).toBeVisible();
     }
     )
     await test.step("Logout from application", async () => {

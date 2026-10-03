@@ -6,8 +6,8 @@ test.describe("Demoshop purchase product @product_purchase", async () => {
     await page.goto('https://qa-cart.com/');
 
     await test.step('Login as registered user', async () => {
-      await page.getByRole('textbox', { name: 'Username or email address' }).fill('anuradha.learn@gmail.com');
-      await page.getByRole('textbox', { name: 'Password  Required' }).fill('Play@1234#$');
+      await page.getByRole('textbox', { name: 'Username or email address' }).fill('arjun.rajesh');
+      await page.getByRole('textbox', { name: 'Password  Required' }).fill('Arjun123$');
       await page.getByRole('button', { name: 'Log in' }).click();
 
     })
