@@ -125,18 +125,34 @@ test.describe("Demoshop purchase product @product_purchase", async () => {
 
         }
         )
-        //await page.pause()
+
 
         await test.step('Verify order is available in order history', async () => {
-            console.log(orderId)
-            await page.getByRole('link', { name: 'My account' }).click();
-            await page.getByRole('link', { name: 'Orders', exact: true }).click();
+            const myaccountLink = page.getByRole('link', { name: /my account/i })
+            await Promise.all([
+                page.waitForURL(/qa-cart.com/),
+                await myaccountLink.click()])
+            const ordersLink = page.getByRole('link', { name: 'Orders', exact: true })
+            await Promise.all([
+                page.waitForURL(/orders/),
+                await ordersLink.click()])
+            await page.waitForLoadState('domcontentloaded')
+
             const ordersTable = page.getByRole('table')
+            expect(ordersTable).toBeVisible()
+
             const orderRow = ordersTable.getByRole('row').
                 filter({ has: page.getByRole('link', { name: `View order number ${orderId}` }) })
-            await orderRow.getByRole('link', { name: `View order ${orderId}` }).click()
+            const viewOrderLink = orderRow.getByRole('link', { name: `View order ${orderId}` })
+
+            await expect(viewOrderLink).toBeVisible()
+
+            await Promise.all([
+                page.waitForURL(/view-order/),
+                await orderRow.getByRole('link', { name: `View order ${orderId}` }).click()])
+            await page.waitForLoadState('domcontentloaded')
+
             await expect(page.getByRole('heading', { name: `Order #${orderId}` })).toBeVisible();
-            await page.pause()
             // await expect(page.getByRole('link', { name: 'View order number 5717' })).toBeVisible();
             // await page.getByRole('link', { name: 'View order 5717' }).click();
             // await expect(page.getByRole('heading', { name: 'Order #' })).toBeVisible();
