@@ -103,8 +103,19 @@ test.describe("Demoshop purchase product @product_purchase", async () => {
         }
         )
         await test.step('Checkout and place order', async () => {
-            await page.getByRole('link', { name: 'Proceed to checkout' }).click();
-            await page.getByRole('button', { name: 'Place order' }).click();
+            const checkoutButton = page.getByRole('link', { name: /proceed to checkout/i })
+            await expect(checkoutButton).toBeEnabled()
+            await Promise.all([
+                page.waitForURL(/checkout/),
+                await checkoutButton.click()])
+
+            const placeOrderButton = page.getByRole('button', { name: /place order/i })
+            await expect(placeOrderButton).toBeEnabled()
+            await Promise.all([
+                page.waitForURL(/order-received/),
+                await placeOrderButton.click()])
+
+            await page.waitForLoadState('domcontentloaded')
             await expect(page.getByText('Thank you. Your order has')).toBeVisible();
             //retrieve order id
             orderId = await page.getByRole('listitem').filter({ hasText: 'Order number:' })
